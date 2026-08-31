@@ -2,10 +2,10 @@
 
 This repository was built with [Claude Code](https://claude.com/claude-code)
 as the implementing engineer and me as the designer and reviewer. I use AI
-heavily and deliberately, and the division of labour mirrors the library's
+heavily, and the division of labour mirrors the library's
 own core principle: code for the tedium, humans at the fragile points. The
-fragile points in AI-assisted work are *specification* and *verification*;
-the tedium is everything in between.
+fragile points in AI-assisted work are specification and verification; the
+tedium is everything in between.
 
 ## Specification before code
 
@@ -24,15 +24,15 @@ assumptions after they're encoded in 300 lines of Python is slower and
 biased toward approval. The expensive artifact to get right is the
 specification, precisely because the code has become cheap.
 
-## Verification is not optional and not manual re-doing
+## Verification without redoing the work
 
 I don't re-derive the agent's outputs by hand; that would forfeit the
-speed and, as with any diff-based check, re-doing the same work has the
-same blind spots. Instead, every write is verified structurally:
+speed, and redoing the same work by the same method has the same blind
+spots anyway. Instead, every write is verified structurally:
 
-- every batch of changes produces a **changelog** (cell, old value, new
-  value, reason) that I can scan in seconds and archive as an audit trail;
-- outputs are verified by **reading back the committed file**, never by
+- every batch of changes produces a changelog (cell, old value, new value,
+  reason) that I can scan in seconds and archive as an audit trail;
+- outputs are verified by reading back the committed file rather than by
   trusting that the write happened as intended; I have watched a stale
   buffer silently revert a whole section, and "the code ran without error"
   is not evidence of anything;
@@ -47,6 +47,6 @@ conventions and non-negotiable rules, so any future session starts already
 knowing that alignment is by label, that reports are exceptions-only, and
 that fuzzy matching is banned. On longer projects I maintain handoff
 documents that let a fresh session (or a fresh human) inherit settled
-design decisions instead of relitigating them. Treating the AI's context as
-a first-class engineering artifact is, in my experience, the single highest
-leverage habit in this way of working.
+design decisions instead of relitigating them. Treating the AI's context
+as an engineering artifact in its own right is, in my experience, the
+habit that has paid off most in this way of working.

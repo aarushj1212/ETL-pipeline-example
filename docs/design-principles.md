@@ -11,32 +11,32 @@ thinking. This document is that thinking.
 ## The threat model: plausible-but-wrong
 
 A pipeline that crashes is a solved problem. You see the traceback, you fix
-it. The failure mode that actually costs you is the number that is *wrong
-but plausible*: an annual total built from eleven months instead of twelve,
+it. The failure mode that actually costs you is the number that is wrong
+but plausible: an annual total built from eleven months instead of twelve,
 a value converted at the year-average exchange rate when the methodology
 says end-of-year, a country whose data landed one row up because the source
-inserted a spacer row. Every one of these survives a visual scan. Some
-survive an audit. The design question is never "how do I detect errors?" in
-the abstract, because there is no universal error detector. It is: which
-*classes* of silent error can I make structurally impossible or loudly
-visible, every run, by default?
+inserted a spacer row. Every one of these survives a visual scan, and some
+survive an audit. Predicting every possible error in the abstract is
+impossible, so the useful design question is narrower: which classes of
+silent error can be made structurally impossible, or loudly visible, on
+every run, by default?
 
 ## Code for data entry, humans for judgment
 
 Deterministic code is auditable but brittle to changes in source format;
-human judgment is robust but expensive and inconsistent. So the division of
-labour is not "automate as much as possible". It is: put the code where the
-work is tedious (copying, converting, summing) and put the human exactly at
-the fragile points (mapping a source to a target, deciding whether a flagged
-discrepancy is an error or an event). A pipeline that asks the human to do
-tedium will be rushed; one that asks the code to make judgment calls will be
-confidently wrong.
+human judgment is robust but expensive and inconsistent. The division of
+labour that works puts the code where the work is tedious (copying,
+converting, summing) and the human exactly at the fragile points (mapping a
+source to a target, deciding whether a flagged discrepancy is an error or
+an event). "Automate as much as possible" misses this second half: a
+pipeline that asks the human to do tedium will be rushed, and one that asks
+the code to make judgment calls will be confidently wrong.
 
 ## Checks are free, questions are expensive
 
-The scarce resource in a human-in-the-loop pipeline is not compute. It is
-the reviewer's attention. So the budget is measured in *interactions*, not
-in number of checks. Run every check on every run, silently; surface only
+The scarce resource in a human-in-the-loop pipeline is the reviewer's
+attention, so the budget is measured in interactions rather than in number
+of checks. Run every check on every run, silently, and surface only
 exceptions. A clean run should cost one glance and one line: "identity
 holds; benchmark clean; no tolerance flags." The alternative, a
 confirmation prompt per table, trains the reviewer to rubber-stamp, and a
@@ -49,25 +49,24 @@ everything and showing nothing converge to the same behaviour.
 Never anchor a parser to a coordinate ("data starts at row 8"). Anchor it to
 what the file itself asserts, the header text and the row labels, and derive
 the coordinates from that. The failure this prevents is specific and I have
-watched it happen: a parser written against a *hand-edited working copy* of
+watched it happen: a parser written against a hand-edited working copy of
 a source file (two extra note rows typed above the table) runs against the
 clean download, scans past the first countries, and emits them as missing.
-No error, and the downstream aggregates quietly understate. Two corollaries:
-
-- Vintage working files may be hand-modified; never infer a source's layout
-  from anything but a clean download.
-- A run of fresh missing values at the *top* of a table is the signature of
-  a parsing bug, not a fact about the world. Real coverage losses do not hit
-  exactly the rows a broken offset would skip.
+No error is raised, and the downstream aggregates quietly understate. Two
+corollaries follow. Vintage working files may be hand-modified, so a
+source's layout should only ever be inferred from a clean download. And a
+run of fresh missing values at the top of a table usually signals a parsing
+bug rather than a genuine loss of coverage, because real coverage losses do
+not hit exactly the rows a broken offset would skip.
 
 The same principle governs writing: values transfer to a target by matched
-row *label*, never by position. Positional pasting fails three independent
+row label, never by position. Positional pasting fails three independent
 ways I have found in the wild (spacer rows present in one file and not the
 other, one table ordering a block differently from its siblings, and a
 source emitting rows the target deliberately omits), and every one of them
 misaligns silently. Label matching turns all three into explicit "unmatched"
 lists. Where names legitimately differ ("Korea" vs "Korea, Rep."), the
-bridge is a *declared* alias, never fuzzy matching: guessing the mapping is
+bridge is a declared alias, never fuzzy matching: guessing the mapping is
 precisely the judgment call the code must not make on the human's behalf.
 
 ## Each series is its own null hypothesis
@@ -75,23 +74,24 @@ precisely the judgment call the code must not make on the human's behalf.
 To decide whether a new value is suspicious, a flat threshold ("flag moves
 over 25%") is simultaneously too noisy and too permissive, because series
 volatilities differ by orders of magnitude: derivatives turnover doubling is
-routine; a large economy's outstanding debt moving a quarter is front-page
-news. So the threshold comes from the series itself: take the row's own
-historical year-on-year changes, and flag the new change when it falls
-outside two standard deviations of that history. Volatile rows earn wide
-bands, stable rows tight ones, with zero per-row configuration.
+routine, while a large economy's outstanding debt moving a quarter would be
+front-page news. So the threshold comes from the series itself: take the
+row's own historical year-on-year changes, and flag the new change when it
+falls outside two standard deviations of that history. Volatile rows earn
+wide bands, stable rows tight ones, with zero per-row configuration.
 
 Two caveats belong in the design, not a footnote. A σ estimated from a
 handful of changes is noise, so below a minimum history the check falls back
 to a flat band rather than pretending to rigor. And financial series are
 fat-tailed: historical shocks inflate σ and desensitise the test, so the
-band is a triage tool that under-flags relative to a normal distribution,
-not a hypothesis test. Separately, transitions between data and missing are
-flagged unconditionally: no magnitude test can see a value that vanished.
+band under-flags relative to what a normal distribution would predict and
+should be read as a triage tool rather than a hypothesis test. Separately,
+transitions between data and missing are flagged unconditionally, since no
+magnitude test can see a value that vanished.
 
 ## Classify discrepancies by pattern, not magnitude
 
-When a rebuilt table disagrees with the reference version, the *size* of the
+When a rebuilt table disagrees with the reference version, the size of the
 disagreement says almost nothing about its cause, and thresholding on size
 gets it exactly backwards. The case that convinced me: a uniform 0.5-1%
 discrepancy across every country, far below any sane threshold, turned out
@@ -108,30 +108,31 @@ the shape of the disagreement across rows:
   or double-counted in one of the two methodologies;
 - mixed signs, scattered, mostly exact matches: consistent with source
   revisions, so rank the largest few for a glance and move on;
-- exact zeros everywhere: say so, once. Positive signals are cheap and
-  build calibrated trust.
+- exact zeros everywhere: report that plainly, since a reviewer who only
+  ever sees warnings has no way of knowing when the pipeline and the
+  reference actually agree.
 
 Patterns narrow where to look; attribution still means opening the source.
-The win is that whole classes of error are *detected* every run by default,
+The win is that whole classes of error get detected every run by default,
 instead of depending on someone happening to notice.
 
 ## Reproduce yesterday before trusting today
 
 The strongest regression test a data pipeline can have is one it gets for
 free: re-extract a period whose answers already exist (last year's published
-edition) through *exactly* the code path that will produce the new period,
+edition) through exactly the code path that will produce the new period,
 and compare. A clean benchmark licenses trust in the new numbers, because
 they flow through a path just validated on known answers. A special-cased
 benchmark path would test the special case.
 
 Two subtleties make this workable rather than naive. First, sources revise
 data retroactively, so a perfect match is not the bar: the benchmark
-validates the *pipeline*, not the values, and revisions inject exactly the
-mixed-sign idiosyncratic noise the pattern classifier is calm about, while
-pipeline bugs produce structure. Second, the reference embodies a
-methodology, not the truth. It may carry its author's inherited error, so a
-flag means "these methodologies differ", not "you are wrong". Which one is
-right is the human's call, made with the pattern as evidence.
+validates the pipeline rather than the values, and revisions inject exactly
+the mixed-sign idiosyncratic noise the pattern classifier is calm about,
+while pipeline bugs produce structure. Second, the reference embodies a
+methodology, and that methodology may carry its author's inherited error,
+so a flag means "these methodologies differ" rather than "you are wrong".
+Which one is right is the human's call, made with the pattern as evidence.
 
 Coverage is diffed alongside values, because an absence is invisible unless
 something owns an expected list: "this country reported last year and is
@@ -142,20 +143,21 @@ spots a hole they aren't looking for.
 
 An error shared by both methodologies, inherited from the previous edition
 and faithfully reproduced, produces a zero diff. Manual re-checking has the
-same blind spot, so re-verifying by hand adds no coverage; what helps is a
-check of a *different kind*, whose blind spots don't overlap: reconciling
-against identities the source itself publishes (in the demo: euro-denominated
+same blind spot, so re-verifying by hand adds no coverage. What helps is a
+check of a different kind, whose blind spots don't overlap: reconciling
+against identities the source itself publishes (in the demo, euro-denominated
 plus foreign-currency issuance must equal the published total), comparing
 country sums against published aggregates, and a once-a-year review of each
 series' precise definition at the moment of confirmation.
 
 ## Fabrication is worse than absence
 
-A pipeline must never write a placeholder where a number belongs: no
-carried-forward value, no interpolation it wasn't asked for, no "0" standing
-in for unknown. A visible gap invites a question; a fabricated cell answers
-it, wrongly, in a way nobody thinks to re-ask. The same discipline applies
-at the end of the run: verify what was actually written to the output file
-by reading it back, not what the code intended to write. Buffered writes
-and stale file handles can silently revert a section, and intent is not
-evidence.
+A pipeline must never write a placeholder where a number belongs, whether a
+carried-forward value, an interpolation it wasn't asked for, or a zero
+standing in for unknown. A visible gap invites a question; a fabricated
+cell answers it, wrongly, in a way nobody thinks to re-ask. The same
+discipline applies at the end of the run: read the output file back to
+verify what was actually written, rather than trusting what the code
+intended to write. A buffered write that never landed looks identical to
+success from inside the program, and I have seen one silently revert a
+whole section.
