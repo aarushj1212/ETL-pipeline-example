@@ -1,6 +1,6 @@
 # pipeline-sentinel
 
-[![CI](https://github.com/aarushjawdekar/pipeline-sentinel/actions/workflows/ci.yml/badge.svg)](https://github.com/aarushjawdekar/pipeline-sentinel/actions/workflows/ci.yml)
+[![CI](https://github.com/aarushj1212/ETL-pipeline-example/actions/workflows/ci.yml/badge.svg)](https://github.com/aarushj1212/ETL-pipeline-example/actions/workflows/ci.yml)
 
 The most expensive failure in a data pipeline is a plausible number that is
 wrong. A crash announces itself and gets fixed the same afternoon; a
