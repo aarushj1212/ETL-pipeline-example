@@ -14,7 +14,7 @@ For every data source I automate, the working sequence is:
 1. I write a prose diagnostic of the source's methodology first: where the
    data lives, what transformations are required, what the previous
    methodology got wrong, and which parts of the layout I judge fragile.
-2. The agent proposes the safety-check design *in plain language*: which
+2. The agent proposes the safety-check design in plain language: which
    checks, catching which failure modes, surfacing what to whom.
 3. Only after I've approved the intuition does any code get written.
 
