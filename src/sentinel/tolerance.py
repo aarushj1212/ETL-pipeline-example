@@ -9,7 +9,7 @@ Instead, each row is its own null hypothesis. Take the row's historical
 year-on-year changes, estimate their mean and standard deviation, and flag
 the newest change when it sits outside ``n_sigma`` standard deviations of
 that history. Volatile series earn wide bands; stable series earn tight
-ones — from their own record, with zero per-row configuration.
+ones, from their own record, with zero per-row configuration.
 
 Two honest caveats, encoded rather than ignored:
 
@@ -21,7 +21,7 @@ Two honest caveats, encoded rather than ignored:
 
 Transitions between "has data" and "missing" are flagged unconditionally.
 A value that disappears (or a gap that suddenly fills) is invisible to any
-magnitude test — and a run of fresh NAs is more often a parsing bug than a
+magnitude test, and a run of fresh NAs is more often a parsing bug than a
 fact about the world.
 """
 
@@ -64,7 +64,7 @@ def _pct_changes(history: Sequence[Value]) -> list[float]:
     """Consecutive year-on-year % changes over the row's own history.
 
     Only adjacent (prev, curr) pairs where both exist and prev != 0 count.
-    A gap breaks the pair — bridging it would manufacture a change that
+    A gap breaks the pair; bridging it would manufacture a change that
     never happened as a single-year move.
     """
     changes: list[float] = []
@@ -89,7 +89,7 @@ def flag_series(
     ``history`` is the row's existing values in chronological order (use
     ``None`` for missing years); ``new_value`` is the freshly produced
     figure. Returns a :class:`Flag` when the value deserves human eyes,
-    else ``None`` — silence is the designed output for clean data.
+    else ``None``; silence is the designed output for clean data.
     """
     if not history:
         return None  # brand-new row: nothing to compare against

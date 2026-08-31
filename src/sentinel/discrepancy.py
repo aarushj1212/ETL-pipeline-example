@@ -3,14 +3,14 @@
 When a rebuilt table disagrees with a reference version, the size of the
 discrepancy says almost nothing about its cause. A 0.7% uniform gap across
 every country can be a wrong exchange-rate convention (annual-average vs
-end-of-period) — a systematic methodology error a "flag if >2%" rule waves
+end-of-period), a systematic methodology error a "flag if >2%" rule waves
 straight through. Meanwhile a genuine data revision can move one country
 by 30% and mean nothing at all.
 
 What identifies the cause is the *shape* of the disagreement across rows:
 
 - Same ratio everywhere       -> multiplicative error: FX rate, unit,
-  scaling. Report the implied ratio — it often names the culprit on sight
+  scaling. Report the implied ratio; it often names the culprit on sight
   (a ratio of ~1000 is a units slip; ~1.01 smells like an FX convention).
 - Same sign, varying size     -> additive error: a component omitted or
   double-counted in one of the two methodologies.
@@ -45,26 +45,26 @@ class DiscrepancyReport:
     n_exact: int = 0
     implied_ratio: float | None = None  # reference ≈ candidate × ratio
     top: list[tuple[str, float, float, float]] = field(default_factory=list)
-    # (label, reference, candidate, relative difference) — largest first
+    # (label, reference, candidate, relative difference), largest first
 
     def summary(self) -> str:
         if self.kind == "empty":
             return "no overlapping values to compare"
         if self.kind == "exact":
-            return f"all {self.n_compared} overlapping values match — pipeline reproduces reference"
+            return f"all {self.n_compared} overlapping values match; pipeline reproduces reference"
         if self.kind == "multiplicative":
             return (
-                f"uniform ratio across rows: reference ≈ candidate × {self.implied_ratio:.6g} "
-                "— suspect FX rate, units, or scaling"
+                f"uniform ratio across rows: reference ≈ candidate × {self.implied_ratio:.6g}"
+                "; suspect FX rate, units, or scaling"
             )
         if self.kind == "additive":
             return (
-                "discrepancies share a sign across most rows "
-                "— suspect a component omitted or double-counted"
+                "discrepancies share a sign across most rows"
+                "; suspect a component omitted or double-counted"
             )
         return (
             f"{self.n_exact}/{self.n_compared} exact; remaining differences are mixed-sign "
-            "and scattered — consistent with retroactive revisions (largest listed)"
+            "and scattered, consistent with retroactive revisions (largest listed)"
         )
 
 
@@ -76,7 +76,7 @@ def classify(
     """Classify how ``candidate`` values disagree with ``reference`` values.
 
     ``pairs`` maps row label -> (reference, candidate). Labels where either
-    side is missing are ignored here — presence differences are a coverage
+    side is missing are ignored here; presence differences are a coverage
     question and are reported separately by the benchmark layer, because an
     absence is invisible unless something owns an expected list.
     """
@@ -99,7 +99,7 @@ def classify(
     inexact = {k: v for k, v in compared.items() if k not in set(exact)}
 
     # Multiplicative: ratios of the non-matching rows cluster tightly around
-    # a common value. Requires more than one row of evidence — a single
+    # a common value. Requires more than one row of evidence; a single
     # discrepant row is just a discrepant row.
     ratios = sorted(r / c for r, c in inexact.values() if c != 0)
     if len(ratios) == len(inexact) >= 2:

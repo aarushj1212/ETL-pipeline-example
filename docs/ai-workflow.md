@@ -3,7 +3,7 @@
 This repository was built with [Claude Code](https://claude.com/claude-code)
 as the implementing engineer and me as the designer and reviewer. I use AI
 heavily and deliberately, and the division of labour mirrors the library's
-own core principle — code for the tedium, humans at the fragile points. The
+own core principle: code for the tedium, humans at the fragile points. The
 fragile points in AI-assisted work are *specification* and *verification*;
 the tedium is everything in between.
 
@@ -14,7 +14,7 @@ For every data source I automate, the working sequence is:
 1. I write a prose diagnostic of the source's methodology first: where the
    data lives, what transformations are required, what the previous
    methodology got wrong, and which parts of the layout I judge fragile.
-2. The agent proposes the safety-check design *in plain language* — which
+2. The agent proposes the safety-check design *in plain language*: which
    checks, catching which failure modes, surfacing what to whom.
 3. Only after I've approved the intuition does any code get written.
 
@@ -26,14 +26,14 @@ specification, precisely because the code has become cheap.
 
 ## Verification is not optional and not manual re-doing
 
-I don't re-derive the agent's outputs by hand — that would forfeit the
+I don't re-derive the agent's outputs by hand; that would forfeit the
 speed and, as with any diff-based check, re-doing the same work has the
 same blind spots. Instead, every write is verified structurally:
 
 - every batch of changes produces a **changelog** (cell, old value, new
   value, reason) that I can scan in seconds and archive as an audit trail;
 - outputs are verified by **reading back the committed file**, never by
-  trusting that the write happened as intended — I have watched a stale
+  trusting that the write happened as intended; I have watched a stale
   buffer silently revert a whole section, and "the code ran without error"
   is not evidence of anything;
 - test suites and benchmark runs (see
@@ -46,7 +46,7 @@ The repository carries a [CLAUDE.md](../CLAUDE.md) with the project's
 conventions and non-negotiable rules, so any future session starts already
 knowing that alignment is by label, that reports are exceptions-only, and
 that fuzzy matching is banned. On longer projects I maintain handoff
-documents that let a fresh session — or a fresh human — inherit settled
+documents that let a fresh session (or a fresh human) inherit settled
 design decisions instead of relitigating them. Treating the AI's context as
 a first-class engineering artifact is, in my experience, the single highest
 leverage habit in this way of working.

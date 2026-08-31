@@ -1,4 +1,4 @@
-# CLAUDE.md — project conventions
+# CLAUDE.md: project conventions
 
 Working agreements for AI sessions (and humans) in this repository.
 
@@ -11,7 +11,7 @@ Working agreements for AI sessions (and humans) in this repository.
 
 ## Non-negotiable design rules
 
-These are settled decisions — do not relitigate them in code:
+These are settled decisions; do not relitigate them in code:
 
 1. **Align by label, never by position.** Any transfer of values between
    tables goes through `sentinel.landmarks.LabelMap`.
@@ -32,7 +32,7 @@ These are settled decisions — do not relitigate them in code:
 
 - Python ≥ 3.10, stdlib-first; `requests`/`openpyxl` only in `demo/`.
 - Docstrings explain *why the check exists* (the failure it prevents), not
-  just what the function does — that is the point of this repository.
+  just what the function does; that is the point of this repository.
 - Keep the library dependency-free and the demo self-contained.
 
 ## Fixtures

@@ -14,14 +14,14 @@ Two subtleties that make this workable in practice:
   idiosyncratic, mixed-sign noise, which the pattern classifier tolerates,
   while pipeline bugs produce structure (uniform ratios, shared signs).
 - **The reference embodies a methodology, not the truth.** A flag means
-  "these two methodologies differ", not "you are wrong" — the reference may
+  "these two methodologies differ", not "you are wrong". The reference may
   carry an inherited error. Which is right is a judgment call that belongs
   to a human, armed with the pattern.
 
 Coverage is checked alongside values. An absence is invisible unless
 something owns an expected list, so the benchmark diffs presence against
 the reference and reports it as questions: "Poland reported last year and
-is missing now — confirm?".
+is missing now, confirm?".
 """
 
 from __future__ import annotations
@@ -62,18 +62,18 @@ class BenchmarkResult:
         rubber-stamped check protects nothing.
         """
         if self.clean:
-            return [f"[{self.period}] benchmark clean — {self.report.summary()}"]
+            return [f"[{self.period}] benchmark clean: {self.report.summary()}"]
         out = [f"[{self.period}] benchmark: {self.report.summary()}"]
         for label, ref, cand, rel in self.report.top:
             out.append(f"    {label}: reference {ref:,.3f} vs pipeline {cand:,.3f} ({rel:+.2%})")
         for label in self.dropped:
-            out.append(f"    {label}: reported in reference, missing from extraction — confirm?")
+            out.append(f"    {label}: reported in reference, missing from extraction, confirm?")
         for label in self.appeared:
-            out.append(f"    {label}: missing in reference, extracted now — new reporter or bug?")
+            out.append(f"    {label}: missing in reference, extracted now: new reporter or bug?")
         for label in self.unmatched_reference:
-            out.append(f"    {label}: reference label never matched by extraction — mapping gap?")
+            out.append(f"    {label}: reference label never matched by extraction: mapping gap?")
         for label in self.unmatched_extracted:
-            out.append(f"    {label}: extracted label unknown to reference — alias needed or out of scope")
+            out.append(f"    {label}: extracted label unknown to reference: alias needed or out of scope")
         return out
 
 
@@ -86,7 +86,7 @@ def run_benchmark(
 ) -> BenchmarkResult:
     """Re-extract ``period`` and compare against ``reference`` values.
 
-    ``extract`` is the pipeline's own extraction function — the same
+    ``extract`` is the pipeline's own extraction function, the same
     callable that will be pointed at the new period. Giving the benchmark a
     special-cased extraction path would test the special case, not the
     pipeline.

@@ -3,10 +3,10 @@ mode is a plausible number that is wrong.
 
 Four small tools, each born from a real silent failure:
 
-- ``landmarks``   — locate data by what stays constant, never by coordinates
-- ``tolerance``   — judge each series against its own history, not a flat threshold
-- ``discrepancy`` — classify disagreements by *pattern*, not magnitude
-- ``benchmark``   — reproduce yesterday before trusting today
+- ``landmarks``: locate data by what stays constant, never by coordinates
+- ``tolerance``: judge each series against its own history, not a flat threshold
+- ``discrepancy``: classify disagreements by *pattern*, not magnitude
+- ``benchmark``: reproduce yesterday before trusting today
 
 See ``docs/design-principles.md`` for the reasoning behind each.
 """

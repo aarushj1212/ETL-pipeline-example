@@ -16,7 +16,7 @@ def test_exact_reproduction_is_named_as_such():
 
 def test_small_uniform_ratio_beats_any_magnitude_threshold():
     # The motivating case: a wrong FX-rate convention shifts every row by
-    # the same ~1.3% — far under a naive "flag if >2%" rule, but the uniform
+    # the same ~1.3%, far under a naive "flag if >2%" rule, but the uniform
     # ratio identifies it instantly, and the implied ratio names the culprit.
     candidate = {c: v / 1.013 for c, v in BASE.items()}
     report = classify(pairs(BASE, candidate))

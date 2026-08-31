@@ -11,7 +11,7 @@ with every sentinel check wired in where it earns its keep.
 ``--sabotage`` injects a classic silent error into the extraction path
 (``units``: a thousand-fold scaling slip; ``fx``: a ~1.3% multiplicative
 convention error; ``drop``: one country quietly lost). None of them crash
-anything — which is the point. Run one and read the benchmark report.
+anything, which is the point. Run one and read the benchmark report.
 
 Data: ECB Securities Issues Statistics (CSEC), monthly gross issuance of
 debt securities, total economy, eight euro-area countries. Publicly
@@ -53,7 +53,7 @@ COUNTRIES = {
 # One dot-separated SDMX key defines a series across 18 dimensions. The two
 # fields that matter here: ACCOUNTING_ENTRY = LI (gross issuance) and
 # CURRENCY_DENOM, where we pull EUR (euro-denominated), X1 (foreign-currency)
-# and _T (total) separately — because _T should equal EUR + X1, and an
+# and _T (total) separately, because _T should equal EUR + X1, and an
 # identity the source itself publishes is a free cross-check (see below).
 KEY = "M.N.{areas}.W0.S1.S1.N.LI.F.F3.T._Z.EUR.{denoms}.F.V.N._T"
 API = "https://data-api.ecb.europa.eu/service/data/CSEC/" + KEY
@@ -77,7 +77,7 @@ def annual_totals(records: list[dict[str, str]], denom: str) -> dict[str, dict[i
 
     Years with fewer than 12 monthly observations are dropped rather than
     summed: an annual figure built from eleven months is the archetypal
-    plausible-but-wrong number — smaller than the truth, alarming to no one.
+    plausible-but-wrong number: smaller than the truth, alarming to no one.
     """
     monthly: dict[str, dict[int, list[float]]] = {name: {} for name in COUNTRIES.values()}
     for r in records:
@@ -102,7 +102,7 @@ def check_identity(records: list[dict[str, str]]) -> list[str]:
     inherited by both is invisible to it. Identities internal to the source
     are a different *kind* of check, so their blind spots don't overlap.
     Published values carry 3 decimals, so a summed total may differ by
-    rounding — the tolerance covers that, nothing more.
+    rounding; the tolerance covers that, nothing more.
     """
     eur = annual_totals(records, "EUR")
     x1 = annual_totals(records, "X1")
@@ -210,7 +210,7 @@ def main() -> int:
         report.append(f"tolerance flags for {new_year} ({len(flags)}):")
         report.extend("    " + str(f) for f in flags)
     else:
-        report.append(f"tolerance flags for {new_year}: none — every change within its row's band")
+        report.append(f"tolerance flags for {new_year}: none; every change within its row's band")
 
     history_only = {c: {y: v for y, v in years.items() if y < new_year} for c, years in table.items()}
     write_workbook(history_only, new_year, new_column, {f.label for f in flags}, report)

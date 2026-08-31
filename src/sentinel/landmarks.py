@@ -1,11 +1,11 @@
-"""Locate data by what stays constant — never by coordinates.
+"""Locate data by what stays constant, never by coordinates.
 
 The failure this module exists to prevent: a parser that reads "data starts
 at row 8" works perfectly against the file it was written for, then a later
 vintage of the same file gains or loses a header row and the parser silently
 scans past the first entries, emitting missing values with no error. A run of
 unexpected NAs at the *top* of a table is the signature of a parsing bug, not
-a data change — real coverage losses rarely hit exactly the first rows.
+a data change; real coverage losses rarely hit exactly the first rows.
 
 Two landmark tools:
 
@@ -44,12 +44,12 @@ def find_header_row(
     CSV). Matching is case-insensitive and whitespace-tolerant. If ``column``
     is given, only that cell of each row is examined.
 
-    The data block is then ``rows[find_header_row(...) + 1:]`` — derived from
+    The data block is then ``rows[find_header_row(...) + 1:]``, derived from
     the file's own content, so extra title rows, a hand-edited working copy,
     or a source adding a disclaimer line all shift the result correctly.
 
     Raises :class:`LandmarkError` when the marker is absent, because a wrong
-    guess here does not fail — it fabricates NAs.
+    guess here does not fail; it fabricates NAs.
     """
     want = _squash(marker)
     for i, row in enumerate(rows):
@@ -59,14 +59,14 @@ def find_header_row(
                 return i
     raise LandmarkError(
         f"Header landmark {marker!r} not found in {len(rows)} rows. "
-        "The source layout has probably changed — inspect the file before "
+        "The source layout has probably changed; inspect the file before "
         "trusting any output derived from it."
     )
 
 
 _PARENS = re.compile(r"\((.*?)\)")
 _WS = re.compile(r"\s+")
-# Footnote markers: daggers, asterisks, and SUPERSCRIPT digits — removed
+# Footnote markers: daggers, asterisks, and SUPERSCRIPT digits, removed
 # before NFKC normalisation, which would otherwise turn ¹ into a plain 1.
 # Plain trailing digits are deliberately kept: "EU 27" ends in a number that
 # means something, and no regex can tell it apart from a footnote. That
@@ -141,7 +141,7 @@ class LabelMap:
         """Match every source label; report leftovers on both sides.
 
         The unmatched lists are the human's short review list. An unmatched
-        *target* label means that row will stay empty — if it had data last
+        *target* label means that row will stay empty; if it had data last
         year, that is a question, not a default. An unmatched *source* label
         may be deliberate scope (rows the target intentionally omits) or a
         renamed entity that needs an alias.
