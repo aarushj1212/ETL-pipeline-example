@@ -26,8 +26,8 @@ is missing now, confirm?".
 
 from __future__ import annotations
 
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
-from typing import Callable, Mapping
 
 from sentinel.discrepancy import DiscrepancyReport, classify
 from sentinel.landmarks import LabelMap

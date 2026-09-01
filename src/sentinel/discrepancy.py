@@ -26,8 +26,8 @@ by default, instead of depending on someone noticing.
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass, field
-from typing import Mapping
 
 Value = float | int | None
 

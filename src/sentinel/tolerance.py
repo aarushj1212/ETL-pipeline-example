@@ -28,8 +28,9 @@ fact about the world.
 from __future__ import annotations
 
 import statistics
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
-from typing import Mapping, Sequence
+from itertools import pairwise
 
 Number = float | int
 Value = Number | None
@@ -68,7 +69,7 @@ def _pct_changes(history: Sequence[Value]) -> list[float]:
     never happened as a single-year move.
     """
     changes: list[float] = []
-    for prev, curr in zip(history, history[1:]):
+    for prev, curr in pairwise(history):
         if prev is None or curr is None or prev == 0:
             continue
         changes.append((curr - prev) / abs(prev))

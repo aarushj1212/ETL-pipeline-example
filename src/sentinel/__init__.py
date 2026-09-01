@@ -11,20 +11,20 @@ Four small tools, each born from a real silent failure:
 See ``docs/design-principles.md`` for the reasoning behind each.
 """
 
+from sentinel.benchmark import BenchmarkResult, run_benchmark
+from sentinel.discrepancy import DiscrepancyReport, classify
 from sentinel.landmarks import LabelMap, find_header_row, normalize_label
 from sentinel.tolerance import Flag, flag_series, flag_table
-from sentinel.discrepancy import DiscrepancyReport, classify
-from sentinel.benchmark import BenchmarkResult, run_benchmark
 
 __all__ = [
-    "LabelMap",
-    "find_header_row",
-    "normalize_label",
+    "BenchmarkResult",
+    "DiscrepancyReport",
     "Flag",
+    "LabelMap",
+    "classify",
+    "find_header_row",
     "flag_series",
     "flag_table",
-    "DiscrepancyReport",
-    "classify",
-    "BenchmarkResult",
+    "normalize_label",
     "run_benchmark",
 ]

@@ -23,8 +23,8 @@ from __future__ import annotations
 
 import re
 import unicodedata
+from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass, field
-from typing import Iterable, Mapping, Sequence
 
 
 class LandmarkError(LookupError):
